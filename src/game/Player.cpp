@@ -38,7 +38,7 @@ void Player::Update(float deltaTime)
 {
 	if (!spawned)
 	{
-		DeadCount--;
+		DeadCount -= 1 * deltaTime;
 		if (DeadCount < 1)
 			spawned = true;
 		return;

@@ -47,8 +47,12 @@ void Enemy::ColisionCallBack(Entity* cause)
 {
 	if (cause->GetType() == TypeEntity::PROJ)
 	{
-		int a = (M_random() & 12);
+		int a = (P_random() & 12);
  		Life -= a + 10;
+	}
+	if (cause->GetType() == TypeEntity::PLAYER)
+	{
+		Dispawn();
 	}
 }
 

@@ -24,7 +24,7 @@ void Spawner::SpawnEnemy()
 					int randX = (P_random() * 3) & gW;
 					if (randX < 50.0f)
 						randX += (i->GetScale().x * 50.f) + 50.0f;
-					if (randX > gW)
+					if (randX + (i->GetScale().x * 50.f) > gW)
 						randX -= (i->GetScale().x * 50.f) + 50.0f;
 					i->Spawn(randX, Game::GetScreenSize().h + 75);
 					count = 125;
