@@ -20,12 +20,12 @@ namespace gl {
         GLCall(glDeleteProgram(m_RendererID));
     }
 
-    void Shader::Bind() const
+    void Shader::Bind()
     {
         GLCall(glUseProgram(m_RendererID));
     }
 
-    void Shader::Unbind() const
+    void Shader::Unbind()
     {
         GLCall(glUseProgram(0));
     }
@@ -65,7 +65,7 @@ namespace gl {
         GLCall(int location = glGetUniformLocation(m_RendererID, name.c_str()));
         if (location == -1)
             std::cout << "Warning: uniform '" << name << "' doesn't exist!" << std::endl;
-        m_UniformLocationCache[name] = location;
+        //m_UniformLocationCache[name] = location;
         return location;
     }
 

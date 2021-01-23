@@ -1,5 +1,6 @@
 #include "Sprite.h"
 #include "Resources.h"
+#include "renderer/Renderer.h"
 #include "input/Keyboard.h"
 
 #include "glm/gtc/matrix_transform.hpp"
@@ -26,59 +27,59 @@ glm::vec3 Sprite::GetScaleV3()
 	return m_Scale;
 }
 
-Sprite::Sprite(Shader* shader, Texture* texture,float x, float y, float w, float h)
-	:color(glm::vec4(0.0f,0.0f,0.0f,0.0f)),
-	 m_Shader(shader),
-	 m_Texture(texture),
-	 m_View(glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0))),
-	 m_Translation(x, y, 0),
-	 m_Scale(glm::vec3(1.0f))
+void Sprite::SetPos(float x, float y, float TexId, float w)
 {
-	float vertices[] = {
-			-50.0f, -50.0f, 0.0f, 0.0f, //0
-			 50.0f, -50.0f, 1.0f, 0.0f, // 1
-			 50.0f,  50.0f, 1.0f, 1.0f, // 2
-			-50.0f,  50.0f, 0.0f, 1.0f
-	};
+	w *= m_Scale.x;
+	vertex[0].Position = { x,y,0.0f };
+	vertex[0].Color = { 0.18f,0.6f,0.96f,1.0f };
+	vertex[0].TexCoords = { 0.0f,0.0f };
+	vertex[0].TexId = { TexId };
 
-	m_VertexBuffer = std::make_unique<VertexBuffer>(vertices, 4 * 4 * sizeof(float));
-	m_VertexBuffer->Bind();
+	vertex[1].Position = { x + w,y,0.0f };
+	vertex[1].Color = { 0.18f,0.6f,0.96f,1.0f };
+	vertex[1].TexCoords = { 1.0f,0.0f };
+	vertex[1].TexId = { TexId };
 
-	unsigned int indices[] = {
-			0 , 1 , 2,
-			2 , 3 , 0
-	};
+	vertex[2].Position = { x + w,y + w,0.0f };
+	vertex[2].Color = { 0.18f,0.6f,0.96f,1.0f };
+	vertex[2].TexCoords = { 1.0f,1.0f };
+	vertex[2].TexId = { TexId };
 
-	m_IndexBuffer = std::make_unique<IndexBuffer>(indices, 6);
+	vertex[3].Position = { x, y + w, 0.0f };
+	vertex[3].Color = { 0.18f,0.6f,0.96f,1.0f };
+	vertex[3].TexCoords = { 0.0f,1.0f };
+	vertex[3].TexId = { TexId };
+}
 
-	VertexBufferLayout layout;
-	layout.Push<float>(2);
-	layout.Push<float>(2);
+Sprite::Sprite(float x, float y, float TexId, float w, float h)
+	:color(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)),
+	m_Translation(x, y, 0),
+	m_Scale(glm::vec3(1.0f)),
+	TexId(TexId)
+{
+	SetPos(x, y,TexId,w);
 
-	m_VertexArray = std::make_unique<VertexArray>();
-	m_VertexArray->Bind();
-	m_VertexArray->AddBuffer(*m_VertexBuffer,layout);
+	indices[0] = 0;
+	indices[1] = 1;
+	indices[2] = 2;
+	indices[3] = 2;
+	indices[4] = 3;
+	indices[5] = 0;
+		
+	render::Renderer::PushInVertexB({ vertex[0],vertex[1],vertex[2],vertex[3] },
+		{indices[0], indices[1], indices[2], indices[3], indices[4], indices[5]} );
 
-	m_Shader->Bind();
-
-	m_Texture->Bind();
-
-	m_Shader->SetUniform1i("u_Texture", 0);
 }
 
 Sprite::~Sprite()
 {
-	delete m_Shader;
+	
 }
 
 void Sprite::Draw(render::Renderer& renderer)
 {
-	m_Texture->Bind();
+	SetPos(m_Translation.x, m_Translation.y,TexId);
 
-	glm::mat4 model = glm::translate(glm::mat4(1.0f), m_Translation);
-	model = glm::scale(model, m_Scale);
-	glm::mat4 mvp = Game::GetProjection() * m_View * model;
-	m_Shader->Bind();
-	m_Shader->SetUniformMat4f("u_MVP", mvp);
-	renderer.Draw(*m_VertexArray, *m_IndexBuffer, *m_Shader);
+	render::Renderer::PushInVertexB({ vertex[0],vertex[1],vertex[2],vertex[3] },
+		{ indices[0], indices[1], indices[2], indices[3], indices[4], indices[5] });
 }

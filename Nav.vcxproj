@@ -186,6 +186,7 @@
     <ClInclude Include="src\engine\renderer\OpenGL\opl.h" />
     <ClInclude Include="src\engine\renderer\OpenGL\Shader.h" />
     <ClInclude Include="src\engine\renderer\OpenGL\Texture.h" />
+    <ClInclude Include="src\engine\renderer\OpenGL\Vertex.h" />
     <ClInclude Include="src\engine\renderer\OpenGL\VertexArray.h" />
     <ClInclude Include="src\engine\renderer\OpenGL\VertexBuffer.h" />
     <ClInclude Include="src\engine\renderer\OpenGL\VertexBufferLayout.h" />

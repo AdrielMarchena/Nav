@@ -20,9 +20,9 @@ namespace gl {
 		Shader(const std::string& filepath);
 		~Shader();
 
-		void Bind() const;
-		void Unbind() const;
-
+		void Bind();
+		void Unbind();
+		unsigned int GetId() { return m_RendererID; };
 		//Set uniforms
 		void SetUniform1i(const std::string& name, int value);
 		void SetUniform1f(const std::string& name, float value);

@@ -1,4 +1,4 @@
-#pragma once
+/*#pragma once
 
 #include "glm/glm.hpp"
 #include "renderer/OpenGL/opl.h"
@@ -32,5 +32,5 @@ private:
 
 	void SetupMesh();
 
-};
+};*/
 

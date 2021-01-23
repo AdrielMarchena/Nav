@@ -3,20 +3,21 @@
 #include "input/Keyboard.h"
 #include "Resources.h"
 #include "Game.h"
+#include "glm/gtc/matrix_transform.hpp"
 using namespace engine;
 
 Player::Player():
-	player_sprite(Resources::GetShader("adv"), Resources::GetTexture("Test"), Game::GetScreenSize().w / 2, Game::GetScreenSize().h / 2)
+	player_sprite(1.0f, 1.0f, 0.0f)
 {
 	Type = TypeEntity::PLAYER;
-	Position.x = Game::GetScreenSize().w / 2;
-	Position.y = Game::GetScreenSize().h / 4;
-	Velocity = { 550.0f,250.f,0.0f };
-	Scale = glm::vec3(0.8f);
+	Position.x = 1 / 2;
+	Position.y = 1 / 2;
+	Velocity = { 550.0f,550.0f,0.0f };
+	Scale = glm::vec3(0.5f);
 	player_sprite.SetScale(Scale);
 	DeadCount = 0;
 
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 5; i++)
 	{
 		auto a = new Shot();
 		shots.push_back(a);
@@ -44,13 +45,12 @@ void Player::Update(float deltaTime)
 		return;
 	}
 	Input(deltaTime);
-	player_sprite.SetTranslation({ Position.x,Position.y,0 });
+	player_sprite.SetTranslation({Position.x, Position.y, 0.0f});
 }
 
 void Player::Draw(render::Renderer& renderer)
 {
-	if (!spawned)
-		return;
+	if (spawned)
 	player_sprite.Draw(renderer);
 }
 

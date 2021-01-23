@@ -43,4 +43,8 @@ namespace gl {
 	{
 		GLCall(glBindTexture(GL_TEXTURE_2D, 0));
 	}
+	unsigned int Texture::GetId()
+	{
+		return m_RendererID;
+	}
 }

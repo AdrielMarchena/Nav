@@ -9,7 +9,7 @@
 static inline void load()
 {
 	using namespace engine;
-	Resources::LoadShader("adv", "src/engine/renderer/shader/Adv.shader",35);
+	Resources::LoadShader("adv", "src/engine/renderer/shader/Adv.shader");
 	Resources::LoadShader("bas", "src/engine/renderer/shader/Basic.shader");
 	Resources::LoadTexture("Frog", "tex/texture.png");
 	Resources::LoadTexture("Nave", "tex/nave.png");
@@ -49,7 +49,7 @@ void Game::IInit()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
 	window = glfwCreateWindow(screen.w, screen.h, "Nav", NULL, NULL);
 	if (!window)
@@ -96,6 +96,8 @@ void Game::IInit()
 
 	//Colision function
 	colisor.SetFuncTest(callback_colisionFunc);
+	render::Renderer::Init();
+
 }
 
 void Game::IClear()
@@ -105,6 +107,7 @@ void Game::IClear()
 	if (sp)
 		delete sp;
 	engine::Resources::Clear();
+	render::Renderer::Clear();
 	glfwTerminate();
 	input::Keyboard::Clear();
 	entityArray.clear();
@@ -122,14 +125,12 @@ void Game::ISetGameState(const GameState& newState)
 
 void Game::IPushEntity(Entity* entity)
 {
-	static int lastLookUp = 0;
 
 	if (!Player)
 		if (entity->GetType() == TypeEntity::PLAYER)
 			Player = entity;
 
 	entityArray.push_back(entity);
-	lastLookUp++;
 }
 
 void Game::ISetScreenSize(float w, float h)
@@ -212,6 +213,7 @@ inline void Game::Draw()
 	GLCall(glClear(GL_COLOR_BUFFER_BIT));
 	for (Entity* en : entityArray)
 		en->Draw(render::Renderer::getInstance());
+	render::Renderer::getInstance().Draw();
 }
 
 void Game::Init()

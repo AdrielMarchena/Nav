@@ -33,9 +33,7 @@ namespace engine {
         {
             if (i->first == name)
             {
-                auto tmp = i->second;
-                shaders_list.erase(i);
-                return tmp;
+                return i->second;
             }
         }
         std::string a = name;

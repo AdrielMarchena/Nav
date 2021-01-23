@@ -134,6 +134,9 @@
     <ClInclude Include="src\engine\Colision.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\engine\renderer\OpenGL\Vertex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\engine\renderer\shader\Basic.shader" />

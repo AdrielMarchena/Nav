@@ -6,13 +6,13 @@
 #include "glm/gtc/matrix_transform.hpp"
 using namespace engine;
 Shot::Shot()
-	:shot_sprite(Resources::GetShader("adv"), Resources::GetTexture("Frog"), -50.0f, -50.0f)
+	:shot_sprite( -1.0f, -1.0f, 1.0f)
 {
 	Type = TypeEntity::PROJ;
 	Scale = glm::vec3(0.2f);
 	shot_sprite.SetScale(Scale);
 	spawned = false;
-	Velocity = {0.0f,350.0f,0.0f};
+	Velocity = {0.0f,1.0f,0.0f};
 }
 
 Shot::~Shot()
@@ -34,8 +34,8 @@ void Shot::PutAway()
 	if (!spawned)
 		return;
 	spawned = false;
-	Position.x = -50.0f;
-	Position.y = -50.0f;
+	Position.x = -1.0f;
+	Position.y = -1.0f;
 	shot_sprite.SetTranslation({ Position.x,Position.y,0 });
 }
 
@@ -55,16 +55,14 @@ void Shot::Update(float deltaTime)
 		return;
 	}
 	if (Velocity.y < maxVelocity)
-		Velocity.y += 200.0f * deltaTime;
+		Velocity.y += 0.1f * deltaTime;
 	Position.y += Velocity.y * deltaTime;
 	shot_sprite.SetTranslation({ Position.x,Position.y,0 });
 }
 
 void Shot::Draw(render::Renderer& renderer)
 {
-	if (!spawned)
-		return;
-
+	if (spawned)
 	shot_sprite.Draw(renderer);
 }
 

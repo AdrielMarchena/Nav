@@ -4,12 +4,12 @@
 #include "Game.h"
 using namespace engine;
 Enemy::Enemy()
-	:enemy_sprite(Resources::GetShader("adv"), Resources::GetTexture("Nave"), -100.0f, -100.0f)
+	:enemy_sprite(-100.0f, -100.0f, 2.0f)
 {
 	Type = TypeEntity::ENEMY;
 	spawned = false;
-	Velocity.y = 250.0f;
-	Scale = glm::vec3(0.9f);
+	Velocity.y = 1.0f;
+	Scale = glm::vec3(0.2f);
 	enemy_sprite.SetScale(Scale);
 	Life = 30;
 }
@@ -23,8 +23,7 @@ void Enemy::Update(float deltaTime)
 	if (!spawned)
 		return;
 
-
-	float border = 50.0f * enemy_sprite.GetScaleF();
+	float border = enemy_sprite.GetScaleF();
 
 	if (Life < 1)
 		Dispawn();
@@ -33,13 +32,11 @@ void Enemy::Update(float deltaTime)
 
 	Position.y -= Velocity.y * deltaTime;
 	enemy_sprite.SetTranslation(Position);
-
 }
 
 void Enemy::Draw(render::Renderer& renderer)
 {
-	if (!spawned)
-		return;
+	if(spawned)
 	enemy_sprite.Draw(renderer);
 }
 

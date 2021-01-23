@@ -1,4 +1,4 @@
-#include "Mesh.h"
+/*#include "Mesh.h"
 
 Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Tex> textures)
 {
@@ -40,4 +40,4 @@ void Mesh::SetupMesh()
 
     glBindVertexArray(0);
 
-}
+}*/
