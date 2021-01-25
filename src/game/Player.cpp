@@ -7,17 +7,15 @@
 using namespace engine;
 
 Player::Player():
-	player_sprite(1.0f, 1.0f, 0.0f)
+	player_sprite(0.0f, 0.0f, 0.0f , 75.0f)
 {
 	Type = TypeEntity::PLAYER;
-	Position.x = 1 / 2;
-	Position.y = 1 / 2;
+	rect.x = Game::GetScreenSize().w / 2;
+	rect.y = Game::GetScreenSize().h / 4;
 	Velocity = { 550.0f,550.0f,0.0f };
-	Scale = glm::vec3(0.5f);
-	player_sprite.SetScale(Scale);
 	DeadCount = 0;
 
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < 30; i++)
 	{
 		auto a = new Shot();
 		shots.push_back(a);
@@ -44,8 +42,8 @@ void Player::Update(float deltaTime)
 			spawned = true;
 		return;
 	}
+	player_sprite.SetTranslation({rect.x, rect.y, 0.0f});
 	Input(deltaTime);
-	player_sprite.SetTranslation({Position.x, Position.y, 0.0f});
 }
 
 void Player::Draw(render::Renderer& renderer)
@@ -59,17 +57,17 @@ inline void Player::Input(float deltaTime)
 	if (DeadCount > 1)
 		return;
 	using namespace input;
-	float border = player_sprite.GetScaleF() * 50.0f;
+	//float border = player_sprite.GetScaleF() * 50.0f;
 	if (Keyboard::isPress(Keyboard::ARROW_LEFT))
 	{
 		//50 is because is the default value on the Vertices things on the sprite
-		if (Position.x - border >= 0)
-			Position.x -= Velocity.x * deltaTime;
+		//if (Position.x - border >= 0)
+			rect.x -= Velocity.x * deltaTime;
 	}
 	if (Keyboard::isPress(Keyboard::ARROW_RIGHT))
 	{
-		if(Position.x + border <= Game::GetScreenSize().w)
-			Position.x += Velocity.x * deltaTime;
+		//if(Position.x + border <= Game::GetScreenSize().w)
+			rect.x += Velocity.x * deltaTime;
 	}
 	Keyboard::clicked(Keyboard::SPACEBAR, [&]() {
 		if(spawned)
@@ -77,8 +75,8 @@ inline void Player::Input(float deltaTime)
 			{
 				if (!i->IsSpawned())
 				{
-					float Y = Position.y + ( border / 4);
-					i->ShotMe(Position.x, Position.y);
+					float Y = rect.y + ( rect.y / 4);
+					i->ShotMe(rect.x, rect.y);
 					break;
 				}
 			}

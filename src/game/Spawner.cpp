@@ -2,7 +2,7 @@
 #include "Game.h"
 Spawner::Spawner()
 {
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < 10; i++)
 	{
 		auto a = new Enemy();
 		enemy_list.push_back(a);
@@ -19,16 +19,11 @@ void Spawner::SpawnEnemy()
 		if (!i->IsSpawned() && count < 1)
 			if (P_random() < 1 || P_random() > 254 || (P_random() < 100 && P_random() > 98))
 			{
-					//int gW = (int)Game::GetScreenSize().w;
-					//int gH = (int)Game::GetScreenSize().h;
-					int gW = 1;
-					int gH = 1;
-					int randX = (P_random() / 1000) & 1;
-					if (randX < 0.1f)
-						randX += (i->GetScale().x * 1.0f) + 1.0f;
-					if (randX + (i->GetScale().x * 1.0f) > 1.0f)
-						randX -= (i->GetScale().x * 1.0f) + 1.0f;
-					i->Spawn(0.5f, 1.0f + 1.0f);
+					int gW = (int)Game::GetScreenSize().w;
+					int gH = (int)Game::GetScreenSize().h;
+
+					int randX = (P_random() + (int)(i->GetPosition().w * 2)) & gW - (int)(i->GetPosition().w * 2);
+					i->Spawn(randX, gH + (i->GetPosition().w * 2) + 25.0f);
 					count = 125;
 					break;
 			}

@@ -35,21 +35,25 @@ namespace render {
         Renderer::getInstance().IInit();
     }
 
-    void Renderer::PushInVertexB(std::array<Vertex, 4> V, std::array<unsigned int, 6> I)
+    void Renderer::PushInVertexB(std::array<Vertex, 4> V)
     {
-        Renderer::getInstance().IPushInVertexB(V, I);
+        Renderer::getInstance().IPushInVertexB(V);
     }
 
     void Renderer::IInit()
     {
+        const size_t MaxQuadCount = 1000;
+        const size_t MaxVertexCount = 4 * MaxQuadCount;
+        const size_t MaxIndexCount = MaxQuadCount * 6;
+
         GLCall(glGenVertexArrays(1, &VertexArrayId));
         GLCall(glBindVertexArray(VertexArrayId));
 
         GLCall(glGenBuffers(1, &VertexBufferId));
         GLCall(glBindBuffer(GL_ARRAY_BUFFER, VertexBufferId));
-        GLCall(glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * 1000, nullptr, GL_STATIC_DRAW));
+        GLCall(glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * MaxVertexCount, nullptr, GL_STATIC_DRAW));
     
-        vertexData.reserve(1000);
+        vertexData.reserve(MaxVertexCount);
 
         GLCall(glEnableVertexAttribArray(0));
         GLCall(glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(Vertex), (const void*)offsetof(Vertex,Position)));
@@ -62,12 +66,25 @@ namespace render {
     
         GLCall(glEnableVertexAttribArray(3));
         GLCall(glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, TexId)));
-    
+        
+        uint32_t indice[MaxIndexCount];
+        uint32_t offset = 0;
+        for (size_t i = 0; i < MaxIndexCount; i += 6)
+        {
+            indice[i + 0] = 0 + offset;
+            indice[i + 1] = 1 + offset;
+            indice[i + 2] = 2 + offset;
+
+            indice[i + 3] = 2 + offset;
+            indice[i + 4] = 3 + offset;
+            indice[i + 5] = 0 + offset;
+
+            offset += 4;
+        }
+
         GLCall(glGenBuffers(1, &IndexBufferId));
         GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IndexBufferId));
-        GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER,1000 * sizeof(unsigned int), nullptr, GL_DYNAMIC_DRAW));
-
-        indices.reserve(1000);
+        GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(indice), indice, GL_STATIC_DRAW));
 
         m_Shader = new gl::Shader("src/engine/renderer/shader/Adv.shader");
         m_Shader->Bind();
@@ -95,13 +112,12 @@ namespace render {
         delete m_Shader;
     }
 
-    void Renderer::IPushInVertexB(std::array<Vertex,4> V, std::array<unsigned int, 6> I)
+    void Renderer::IPushInVertexB(std::array<Vertex,4> V)
     {
         //static unsigned int LastV = 0, LastI = 0;
         for (auto& v : V)
             vertexData.push_back(v);
-        for (auto& i : I)
-            indices.push_back(i);
+        IndicesCount += 6;
         //LastV += V.size();
         //LastI += I.size();
     }
@@ -116,15 +132,15 @@ namespace render {
         m_Shader->SetUniformMat4f("u_ViewProj", Game::GetProjection());
         m_Shader->SetUniformMat4f("u_Transform", glm::translate(glm::mat4(1.0f),glm::vec3(0.0f,0.0f,0.0f)));
 
+        //std::cout << "Pointer" << sizeof(vertexData.data()) << std::endl;
+        //std::cout << "Vector" << indices.size() << std::endl;
         GLCall(glBindBuffer(GL_ARRAY_BUFFER, VertexBufferId));
-        GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0 ,sizeof(Vertex) * 1000, vertexData.data()));
+        GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0 , vertexData.size() * sizeof(Vertex), vertexData.data()));
         GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IndexBufferId));
-        GLCall(glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(unsigned int) * indices.size(),indices.data()));
-        GLCall(glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr));
+        GLCall(glDrawElements(GL_TRIANGLES, IndicesCount, GL_UNSIGNED_INT, nullptr));
         m_Shader->Unbind();
         vertexData.clear();
-        indices.clear();
+        IndicesCount = 0;
         vertexData.reserve(1000);
-        indices.reserve(1000);
     }
 }

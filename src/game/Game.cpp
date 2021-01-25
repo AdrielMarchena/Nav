@@ -17,19 +17,16 @@ static inline void load()
 }
 static inline bool callback_colisionFunc(Entity* f, Entity* c)
 {
-	float borderF = f->GetScale().x * 50.0f;
-	float borderC = c->GetScale().x * 50.0f;
+	Rect rect1 = f->GetPosition();
+	Rect rect2 = c->GetPosition();
 
-	if (f->GetPosition().x - borderF < c->GetPosition().x - borderC
-		&& f->GetPosition().x + borderF > c->GetPosition().x - borderC
-		&& f->GetPosition().y - borderF < c->GetPosition().y - borderC
-		&& f->GetPosition().y + borderF > c->GetPosition().y - borderC)
-	{
+	if (rect1.x < rect2.x + rect2.w &&
+		rect1.x + rect1.w > rect2.x &&
+		rect1.y < rect2.y + rect2.h &&
+		rect1.y + rect1.h > rect2.y) {
 		return true;
 	}
-	else
-		return false;
-
+	return false;
 }
 void Game::IInit()
 {

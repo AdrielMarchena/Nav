@@ -29,7 +29,7 @@ namespace render {
         static void Clear();
         static void Draw();
         static void Init();
-        static void PushInVertexB(std::array<Vertex, 4> V, std::array<unsigned int, 6> I);
+        static void PushInVertexB(std::array<Vertex, 4> V);
 
     private:
         void IInit();
@@ -40,9 +40,11 @@ namespace render {
         unsigned int Texs[32];
         gl::Shader* m_Shader;
 
-        void IPushInVertexB(std::array<Vertex, 4> V, std::array<unsigned int, 6> I);
+        unsigned int IndicesCount = 0;
+
+        void IPushInVertexB(std::array<Vertex, 4> V);
         void IDraw();
         std::vector<Vertex> vertexData;
-        std::vector<unsigned int> indices;
+        //std::vector<unsigned int> indices;
     };
 }

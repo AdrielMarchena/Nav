@@ -1,6 +1,5 @@
 #pragma once
 
 struct Rect {
-	float x, y;
-	float w, h;
+	float x, y ,w, h;
 };

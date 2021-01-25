@@ -4,13 +4,11 @@
 #include "Game.h"
 using namespace engine;
 Enemy::Enemy()
-	:enemy_sprite(-100.0f, -100.0f, 2.0f)
+	:enemy_sprite(-100.0f, -100.0f, 2.0f, 60.0f)
 {
 	Type = TypeEntity::ENEMY;
 	spawned = false;
-	Velocity.y = 1.0f;
-	Scale = glm::vec3(0.2f);
-	enemy_sprite.SetScale(Scale);
+	Velocity.y = 335.0f;
 	Life = 30;
 }
 
@@ -23,15 +21,13 @@ void Enemy::Update(float deltaTime)
 	if (!spawned)
 		return;
 
-	float border = enemy_sprite.GetScaleF();
-
 	if (Life < 1)
 		Dispawn();
-	if ( Position.y + border + 10.0f < 0)
+	if ( rect.y + rect.h + 10.0f < 0)
 		Dispawn();
 
-	Position.y -= Velocity.y * deltaTime;
-	enemy_sprite.SetTranslation(Position);
+	rect.y -= Velocity.y * deltaTime;
+	enemy_sprite.SetTranslation({rect.x,rect.y,0.0f});
 }
 
 void Enemy::Draw(render::Renderer& renderer)
@@ -45,7 +41,7 @@ void Enemy::ColisionCallBack(Entity* cause)
 	if (cause->GetType() == TypeEntity::PROJ)
 	{
 		int a = (P_random() & 12);
- 		Life -= a + 10;
+ 		Life -= a + 7;
 	}
 	if (cause->GetType() == TypeEntity::PLAYER)
 	{
@@ -56,15 +52,15 @@ void Enemy::ColisionCallBack(Entity* cause)
 void Enemy::Spawn(float x, float y)
 {
 	spawned = true;
-	Position.x = x;
-	Position.y = y;
+	rect.x = x;
+	rect.y = y;
 	Life = 30;
-	enemy_sprite.SetTranslation(Position);
+	enemy_sprite.SetTranslation({ rect.x,rect.y,0.0f });
 }
 
 void Enemy::Dispawn()
 {
 	spawned = false;
-	Position.x = -100.0f;
-	Position.y = -100.0f;
+	rect.x = -100.0f;
+	rect.y = -100.0f;
 }

@@ -9,55 +9,40 @@
 
 void Sprite::SetTranslation(glm::vec3 Translation)
 {
-	m_Translation = Translation;
+	Size.x = Translation.x;
+	Size.y = Translation.y;
 }
 
-void Sprite::SetScale(glm::vec3 scale)
+void Sprite::SetSize(glm::vec3 scale)
 {
-	m_Scale = scale;
+	Size.w = scale.x;
+	Size.h = scale.y;
 }
 /* I return only 1 member here because the 3 values of scale are the same */
-float Sprite::GetScaleF()
+glm::vec2 Sprite::GetSizeF()
 {
-	return m_Scale.x;
+	return {Size.w,Size.h};
 }
 
-glm::vec3 Sprite::GetScaleV3()
+void Sprite::SetPos(float x, float y, float w,float h)
 {
-	return m_Scale;
-}
-
-void Sprite::SetPos(float x, float y, float TexId, float w)
-{
-	w *= m_Scale.x;
+	//w *= m_Scale.x;
 	vertex[0].Position = { x,y,0.0f };
-	vertex[0].Color = { 0.18f,0.6f,0.96f,1.0f };
-	vertex[0].TexCoords = { 0.0f,0.0f };
-	vertex[0].TexId = { TexId };
 
 	vertex[1].Position = { x + w,y,0.0f };
-	vertex[1].Color = { 0.18f,0.6f,0.96f,1.0f };
-	vertex[1].TexCoords = { 1.0f,0.0f };
-	vertex[1].TexId = { TexId };
 
-	vertex[2].Position = { x + w,y + w,0.0f };
-	vertex[2].Color = { 0.18f,0.6f,0.96f,1.0f };
-	vertex[2].TexCoords = { 1.0f,1.0f };
-	vertex[2].TexId = { TexId };
+	vertex[2].Position = { x + w,y + h,0.0f };
 
-	vertex[3].Position = { x, y + w, 0.0f };
-	vertex[3].Color = { 0.18f,0.6f,0.96f,1.0f };
-	vertex[3].TexCoords = { 0.0f,1.0f };
-	vertex[3].TexId = { TexId };
+	vertex[3].Position = { x, y + h, 0.0f };
 }
 
 Sprite::Sprite(float x, float y, float TexId, float w, float h)
 	:color(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)),
-	m_Translation(x, y, 0),
-	m_Scale(glm::vec3(1.0f)),
-	TexId(TexId)
+	Size({x,y,w,h}),
+	TexId(TexId),
+	size(w)
 {
-	SetPos(x, y,TexId,w);
+	SetPos(x, y, Size.w,Size.h);
 
 	indices[0] = 0;
 	indices[1] = 1;
@@ -66,20 +51,15 @@ Sprite::Sprite(float x, float y, float TexId, float w, float h)
 	indices[4] = 3;
 	indices[5] = 0;
 		
-	render::Renderer::PushInVertexB({ vertex[0],vertex[1],vertex[2],vertex[3] },
-		{indices[0], indices[1], indices[2], indices[3], indices[4], indices[5]} );
-
 }
 
 Sprite::~Sprite()
 {
-	
 }
 
 void Sprite::Draw(render::Renderer& renderer)
 {
-	SetPos(m_Translation.x, m_Translation.y,TexId);
+	SetPos(Size.x, Size.y,Size.w, Size.h);
 
-	render::Renderer::PushInVertexB({ vertex[0],vertex[1],vertex[2],vertex[3] },
-		{ indices[0], indices[1], indices[2], indices[3], indices[4], indices[5] });
+	render::Renderer::PushInVertexB({ vertex[0],vertex[1],vertex[2],vertex[3]});
 }
