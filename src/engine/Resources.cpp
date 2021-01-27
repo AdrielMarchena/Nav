@@ -1,11 +1,6 @@
 #include "Resources.h"
-//#include <future>
-
+#include "audio/SoundBuffer.h"
 namespace engine {
-    /*
-        Singleton "Require" this here
-        because i can't modify memeber non static members in static funtions
-    */
     gl::Shader* Resources::GetShader(const char* name)
     {
         return Resources::getInstance().IGetShader(name);
@@ -14,6 +9,10 @@ namespace engine {
     {
         return Resources::getInstance().IGetTexture(name);;
     }
+    ALuint Resources::GetSound(const char* name)
+    {
+        return Resources::getInstance().IGetSound(name);
+    }
     void Resources::LoadShader(const char* name, const char* path, int count)
     {
         Resources::getInstance().ILoadShader(name, path,count);
@@ -21,6 +20,10 @@ namespace engine {
     void Resources::LoadTexture(const char* name, const char* path, int count)
     {
         Resources::getInstance().ILoadTexture(name, path, count);
+    }
+    void Resources::LoadSound(const char* name, const char* path)
+    {
+        Resources::getInstance().ILoadSound(name, path);
     }
     void Resources::Clear()
     {
@@ -59,14 +62,32 @@ namespace engine {
         throw std::exception(mes.c_str());
     }
 
+    ALuint Resources::IGetSound(const char* name)
+    {
+        for (auto& sound : sound_list)
+        {
+            if (sound.first == name)
+            {
+                return sound.second;
+            }
+        }
+        std::string a = name;
+        std::string mes = "Can't find Sound < " + a + " >";
+        throw std::exception(mes.c_str());
+    }
+
     void Resources::IClear()
     {
-        for (auto sh : shaders_list)
+        for (auto& sh : shaders_list)
             delete sh.second;
-        for (auto tx : texture_list)
+        for (auto& tx : texture_list)
             delete tx.second;
         shaders_list.clear();
         texture_list.clear();
+        for (auto& sd : sound_list)
+        {
+            alDeleteBuffers(1, &sd.second);
+        }
     }
 
     /* Just a dream here :( */
@@ -94,5 +115,10 @@ namespace engine {
             //std::lock_guard<std::mutex> lock(ResourcesMutex);
             texture_list.push_back(std::make_pair(name, tx));
         } 
+    }
+    void Resources::ILoadSound(const char* name, const char* path)
+    {
+        auto sound = SoundBuffer::get()->addSoundEffect(path);
+        sound_list.push_back(std::make_pair(name, sound));
     }
 }

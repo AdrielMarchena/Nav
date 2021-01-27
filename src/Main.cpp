@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
 	Player* player = new Player();
 
 	game.PushEntity(player);
-	game.PushIntoColisor(player);
+	//game.PushIntoColisor(player);
 	game.Loop();
 
 	game.Clear();

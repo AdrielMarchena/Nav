@@ -14,7 +14,8 @@ namespace engine
 		Colision(std::vector<Entity*> entitys, std::function<bool(Entity* f, Entity* c)> test_function);
 		Colision();
 		~Colision();
-
+		
+		void ClearReserve(unsigned int qtd);
 		void TestColision();
 		void PushEntity(Entity* entity);
 		void SetFuncTest(std::function<bool(Entity* f, Entity* c)> test_function);

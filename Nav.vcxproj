@@ -159,6 +159,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\engine\audio\SoundBuffer.cpp" />
+    <ClCompile Include="src\engine\audio\SoundDevice.cpp" />
+    <ClCompile Include="src\engine\audio\SoundSource.cpp" />
     <ClCompile Include="src\engine\Colision.cpp" />
     <ClCompile Include="src\engine\Mesh.cpp" />
     <ClCompile Include="src\engine\input\Keyboard.cpp" />
@@ -174,11 +177,15 @@
     <ClCompile Include="src\engine\Resources.cpp" />
     <ClCompile Include="src\game\Shot.cpp" />
     <ClCompile Include="src\game\Spawner.cpp" />
+    <ClCompile Include="src\game\Utils\RandomList.cpp" />
     <ClCompile Include="src\vendor\definer_Stb.cpp" />
     <ClCompile Include="src\engine\renderer\Renderer.cpp" />
     <ClCompile Include="src\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\engine\audio\SoundBuffer.h" />
+    <ClInclude Include="src\engine\audio\SoundDevice.h" />
+    <ClInclude Include="src\engine\audio\SoundSource.h" />
     <ClInclude Include="src\engine\Colision.h" />
     <ClInclude Include="src\engine\Mesh.h" />
     <ClInclude Include="src\engine\input\Keyboard.h" />

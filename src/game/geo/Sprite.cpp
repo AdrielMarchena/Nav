@@ -36,6 +36,23 @@ void Sprite::SetPos(float x, float y, float w,float h)
 	vertex[3].Position = { x, y + h, 0.0f };
 }
 
+void Sprite::SetTexCoords(float x, float y)
+{
+	vertex[0].TexCoords = { 0.0f,0.0f };
+	vertex[1].TexCoords = { 1.0f + x,0.0f };
+	vertex[2].TexCoords = { 1.0f + x,1.0f + y };
+	vertex[3].TexCoords = { 0.0f,1.0f + y };
+}
+
+void Sprite::SetTexId(float texId)
+{
+	vertex[0].TexId = texId;
+	vertex[1].TexId = texId;
+	vertex[2].TexId = texId;
+	vertex[3].TexId = texId;
+
+}
+
 Sprite::Sprite(float x, float y, float TexId, float w, float h)
 	:color(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)),
 	Size({x,y,w,h}),
@@ -43,14 +60,8 @@ Sprite::Sprite(float x, float y, float TexId, float w, float h)
 	size(w)
 {
 	SetPos(x, y, Size.w,Size.h);
-
-	indices[0] = 0;
-	indices[1] = 1;
-	indices[2] = 2;
-	indices[3] = 2;
-	indices[4] = 3;
-	indices[5] = 0;
-		
+	SetTexCoords(0, 0);
+	SetTexId(TexId);
 }
 
 Sprite::~Sprite()
@@ -60,6 +71,5 @@ Sprite::~Sprite()
 void Sprite::Draw(render::Renderer& renderer)
 {
 	SetPos(Size.x, Size.y,Size.w, Size.h);
-
 	render::Renderer::PushInVertexB({ vertex[0],vertex[1],vertex[2],vertex[3]});
 }

@@ -4,10 +4,13 @@
 #include "Game.h"
 using namespace engine;
 Enemy::Enemy()
-	:enemy_sprite(-100.0f, -100.0f, 2.0f, 60.0f)
+	:enemy_sprite(-100.0f, -100.0f, 2.0f)
 {
+	rect.w = 60.0f;
+	rect.h = 60.0f;
 	Type = TypeEntity::ENEMY;
 	spawned = false;
+	enemy_sprite.SetSize({ rect.w, rect.h,0.0f });
 	Velocity.y = 335.0f;
 	Life = 30;
 }
@@ -23,7 +26,7 @@ void Enemy::Update(float deltaTime)
 
 	if (Life < 1)
 		Dispawn();
-	if ( rect.y + rect.h + 10.0f < 0)
+	if ( rect.y + rect.h < 0)
 		Dispawn();
 
 	rect.y -= Velocity.y * deltaTime;

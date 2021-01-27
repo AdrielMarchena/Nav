@@ -14,20 +14,29 @@ namespace engine
 	{
 		entitys.clear();
 	}
+	void Colision::ClearReserve(unsigned int qtd)
+	{
+		entitys.clear();
+		entitys.reserve(qtd);
+	}
 	/* Iterate in Entity List and call the function provided to the class */
 	void Colision::TestColision()
 	{
 		for (auto ent : entitys)
 		{
+			//if (ent->IsSpawned())
 			for (auto entT : entitys)
 			{
-				// Don't test Colision with yourself or with somethin that is not in screen
-				if (!ent->IsSpawned() || !entT->IsSpawned() || ent == entT)
-					continue;
+				/*
+				//Don't test Colision with yourself or with somethin that is not in screen
+				//if (!entT->IsSpawned() || !ent->IsSpawned() || ent == entT)
+					//continue;
+				*/
+				if(ent != entT)
 				if (test_function(ent, entT))
 				{
-	 				ent->ColisionCallBack(entT);
 					entT->ColisionCallBack(ent);
+	 				ent->ColisionCallBack(entT);
 				}
 			}
 		}

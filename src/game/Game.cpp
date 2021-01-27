@@ -1,7 +1,7 @@
 #include "Game.h"
 #include "Resources.h"
 #include "input/Keyboard.h"
-
+#include "audio/SoundDevice.h"
 #include <future>
 
 #include "glm/gtc/matrix_transform.hpp"
@@ -15,11 +15,24 @@ static inline void load()
 	Resources::LoadTexture("Nave", "tex/nave.png");
 	Resources::LoadTexture("Test", "tex/test.png");
 }
+static inline void loadSounds()
+{
+	using namespace engine;
+	Resources::LoadSound("shot_sound","sounds/shot_sound.ogg");
+	Resources::LoadSound("boom_sound", "sounds/boom_sound.ogg");
+}
+
 static inline bool callback_colisionFunc(Entity* f, Entity* c)
 {
 	Rect rect1 = f->GetPosition();
 	Rect rect2 = c->GetPosition();
 
+	/*if (rect1.x < rect2.x + rect2.w &&
+		rect1.x + rect1.w > rect2.x &&
+		rect1.y < rect2.y + rect2.h &&
+		rect1.y + rect1.h > rect2.y) {
+		return true;
+	}*/
 	if (rect1.x < rect2.x + rect2.w &&
 		rect1.x + rect1.w > rect2.x &&
 		rect1.y < rect2.y + rect2.h &&
@@ -46,7 +59,7 @@ void Game::IInit()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
 	window = glfwCreateWindow(screen.w, screen.h, "Nav", NULL, NULL);
 	if (!window)
@@ -56,6 +69,8 @@ void Game::IInit()
 		isInit = false;
 		return;
 	}
+
+	
 
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1);
@@ -94,7 +109,9 @@ void Game::IInit()
 	//Colision function
 	colisor.SetFuncTest(callback_colisionFunc);
 	render::Renderer::Init();
-
+	//Init SoundDevice Singleton
+	SoundDevice* mySound = SoundDevice::get();
+	loadSounds();
 }
 
 void Game::IClear()
@@ -167,6 +184,7 @@ void Game::ILoop()
 	float lastFrame = 0.0f;
 
 	std::cout << "LOOP  STARTING" << std::endl;
+	std::cout << "\nArrows Control the Frog\nSpaceBar to Shot\nA to Shot a LOT" << std::endl;
 	while (state != GameState::END)
 	{
 		float currentTime = glfwGetTime();
@@ -193,10 +211,14 @@ inline void Game::HandleInput(float deltaTime)
 
 inline void Game::Update(float deltaTime)
 {
-	for (Entity* en : entityArray)
-		en->Update(deltaTime);
+	colisor.ClearReserve(entityArray.size());
 	sp->SpawnEnemy();
-	colisor.TestColision();
+	for (Entity* en : entityArray)
+	{
+		en->Update(deltaTime);
+		if (en->IsSpawned())
+			colisor.PushEntity(en);
+	}
 }
 
 void Game::Loop()
@@ -211,6 +233,7 @@ inline void Game::Draw()
 	for (Entity* en : entityArray)
 		en->Draw(render::Renderer::getInstance());
 	render::Renderer::getInstance().Draw();
+	colisor.TestColision();
 }
 
 void Game::Init()

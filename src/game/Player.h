@@ -5,6 +5,7 @@
 #include <vector>
 #include "Shot.h"
 #include "geo/Rect.h"
+#include "audio/SoundSource.h"
 class Player : public Entity, public Rect
 {
 private:
@@ -12,6 +13,7 @@ private:
 	std::vector<Shot*> shots;
 	unsigned char spawnedShots;
 	unsigned char lastSpawnedShots;
+	SoundSource Speaker[4];
 public:
 	Player();
 	~Player();

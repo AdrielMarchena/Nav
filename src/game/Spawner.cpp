@@ -7,7 +7,7 @@ Spawner::Spawner()
 		auto a = new Enemy();
 		enemy_list.push_back(a);
 		Game::PushEntity(a);
-		Game::PushIntoColisor(a);
+		//Game::PushIntoColisor(a);
 	}
 }
 
@@ -22,8 +22,12 @@ void Spawner::SpawnEnemy()
 					int gW = (int)Game::GetScreenSize().w;
 					int gH = (int)Game::GetScreenSize().h;
 
-					int randX = (P_random() + (int)(i->GetPosition().w * 2)) & gW - (int)(i->GetPosition().w * 2);
-					i->Spawn(randX, gH + (i->GetPosition().w * 2) + 25.0f);
+					int randX = (P_random() * 5 ) & gW;
+					if (randX + i->GetPosition().w > gW)
+						randX = gW - i->GetPosition().w - 1.0f - (P_random() & gW);
+					if (randX < 0)
+						randX = (-randX) + 2.0f;
+					i->Spawn(randX, gH + i->GetPosition().h + 55.0f);
 					count = 125;
 					break;
 			}

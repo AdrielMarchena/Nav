@@ -110,6 +110,11 @@ namespace render {
     {
         GLCall(glClear(GL_COLOR_BUFFER_BIT));
         delete m_Shader;
+        GLCall(glDeleteBuffers(1, &VertexBufferId));
+        GLCall(glDeleteBuffers(1, &IndexBufferId));
+        for(int i = 0 ; i < 3; i++)
+            glDeleteTextures(1, &Texs[i]);
+        GLCall(glDeleteVertexArrays(1, &VertexArrayId));
     }
 
     void Renderer::IPushInVertexB(std::array<Vertex,4> V)

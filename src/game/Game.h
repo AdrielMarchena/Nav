@@ -13,8 +13,8 @@
 
 #include "Colision.h"
 
-#define WINDOW_WIDTH 960.0f
-#define WINDOW_HEIGHT 540.0f
+#define WINDOW_WIDTH 375.0f
+#define WINDOW_HEIGHT 800.0f
 
 enum class GameState : uint8_t
 {
