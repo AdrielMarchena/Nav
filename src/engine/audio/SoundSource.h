@@ -3,11 +3,14 @@
 class SoundSource
 {
 public:
-	SoundSource();
+	SoundSource(float gain = 1.0f);
 	~SoundSource();
 
 	void Play(const ALuint buffer_to_play);
-
+	void Loop(bool loop);
+	void SetGain(float gain);
+	bool IsPlaying();
+	ALuint GetBuffer();
 private:
 	ALuint p_Source;
 	float p_Pitch = 1.f;

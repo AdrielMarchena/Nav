@@ -50,10 +50,6 @@ namespace engine {
         {
             if (i->first == name)
             {
-                /* No need to erase a texture, this can be used multiple times */
-                //auto tmp = i->second;
-                //texture_list.erase(i);
-                //return tmp
                 return i->second;
             }
         }

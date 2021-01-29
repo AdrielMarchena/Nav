@@ -6,7 +6,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 using namespace engine;
 Shot::Shot()
-	:shot_sprite( -100.0f, -100.0f, 1.0f ,0.1f)
+	:shot_sprite( -100.0f, -100.0f, 1.0f ,0.1f,1.0f)
 {
 	Type = TypeEntity::PROJ;
 	rect.w = 20.0f;
@@ -38,7 +38,7 @@ void Shot::PutAway()
 	spawned = false;
 	rect.x = -100.0f;
 	rect.y = -100.0f;
-	shot_sprite.SetTranslation({ rect.x,rect.y,0 });
+	shot_sprite.SetTranslation({ rect.x,rect.y,1.0f });
 }
 
 void Shot::Kill()

@@ -181,6 +181,12 @@
     <ClCompile Include="src\vendor\definer_Stb.cpp" />
     <ClCompile Include="src\engine\renderer\Renderer.cpp" />
     <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\vendor\imgui\imgui.cpp" />
+    <ClCompile Include="src\vendor\imgui\imgui_demo.cpp" />
+    <ClCompile Include="src\vendor\imgui\imgui_draw.cpp" />
+    <ClCompile Include="src\vendor\imgui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="src\vendor\imgui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="src\vendor\imgui\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\engine\audio\SoundBuffer.h" />
@@ -208,11 +214,22 @@
     <ClInclude Include="src\game\Shot.h" />
     <ClInclude Include="src\game\Spawner.h" />
     <ClInclude Include="src\game\Utils\RandomList.h" />
+    <ClInclude Include="src\vendor\imgui\imconfig.h" />
+    <ClInclude Include="src\vendor\imgui\imgui.h" />
+    <ClInclude Include="src\vendor\imgui\imgui_impl_glfw.h" />
+    <ClInclude Include="src\vendor\imgui\imgui_impl_opengl3.h" />
+    <ClInclude Include="src\vendor\imgui\imgui_internal.h" />
+    <ClInclude Include="src\vendor\imgui\imstb_rectpack.h" />
+    <ClInclude Include="src\vendor\imgui\imstb_textedit.h" />
+    <ClInclude Include="src\vendor\imgui\imstb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="glew32.dll" />
     <None Include="src\engine\renderer\shader\Adv.shader" />
     <None Include="src\engine\renderer\shader\Basic.shader" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="src\vendor\imgui\imgui.natvis" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

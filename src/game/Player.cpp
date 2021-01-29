@@ -3,12 +3,16 @@
 #include "input/Keyboard.h"
 #include "Resources.h"
 #include "Game.h"
+#include "imgui/imgui.h"
 #include "glm/gtc/matrix_transform.hpp"
 using namespace engine;
 
 Player::Player():
-	player_sprite(0.0f, 0.0f, 0.0f , 65.0f, 65.0f)
+	player_sprite(0.0f, 0.0f, 0.0f , 65.0f, 65.0f,0.0f)
 {
+	//float divid = 1.0f / 64.0f;
+	//sprite_coords = { 0.0f,(40.0f * divid),divid * 16.0f,1.0f };
+	//player_sprite.SetTexCoords(sprite_coords);
 	Type = TypeEntity::PLAYER;
 	rect.x = Game::GetScreenSize().w / 2;
 	rect.y = 65.0f;
@@ -38,7 +42,6 @@ Player::~Player()
 
 void Player::Update(float deltaTime)
 {
-	//std::cout << "Screen Size W < " << Game::GetScreenSize().w << " > H < " << Game::GetScreenSize().h << " >" << std::endl;
 	if (!spawned)
 	{
 		DeadCount -= 1 * deltaTime;
@@ -46,14 +49,23 @@ void Player::Update(float deltaTime)
 			spawned = true;
 		return;
 	}
-	player_sprite.SetTranslation({rect.x, rect.y, 0.0f});
 	Input(deltaTime);
+	player_sprite.SetTranslation({ rect.x, rect.y, 0.0f });
 }
 
 void Player::Draw(render::Renderer& renderer)
 {
-	if (spawned)
+	if (!spawned)
+		return;
+	player_sprite.SetTexId(texId);
 	player_sprite.Draw(renderer);
+}
+
+void Player::ImGUiRender()
+{
+	ImGui::Text("Player:");
+	ImGui::SliderFloat2("Velocity", &Velocity.x,100.0f, 1000.0f);
+	ImGui::SliderInt("Sprite", &texId, 0, 3);
 }
 
 inline void Player::Input(float deltaTime)
@@ -86,7 +98,7 @@ inline void Player::Input(float deltaTime)
 	Keyboard::clicked(Keyboard::S_KEY, [&]() {
 		static unsigned int tex = 0;
 		tex++;
-		player_sprite.SetTexId(tex % 2);
+		player_sprite.SetTexId(tex % 4);
 	});
 	Keyboard::clicked(Keyboard::SPACEBAR, [&]() {
 		if(spawned)
@@ -95,8 +107,8 @@ inline void Player::Input(float deltaTime)
 				if (!i->IsSpawned())
 				{
 					float X = (rect.x + (rect.w / 2)) - (i->GetPosition().w / 2);
-					i->ShotMe(X, rect.y);
-					Speaker[0].Play(Resources::GetSound("shot_sound"));
+					i->ShotMe(X, rect.y + (rect.h / 1.25f));
+					Game::PlayEffect(Speaker[0], Resources::GetSound("shot_sound"));
 					break;
 				}
 			}
@@ -122,7 +134,7 @@ void Player::ColisionCallBack(Entity* cause)
 	{
 		DeadCount = 200;
 		spawned = false;
-		Speaker[1].Play(Resources::GetSound("boom_sound"));
+		Game::PlayEffect(Speaker[1], Resources::GetSound("boom_sound"));
 	}
 }
 

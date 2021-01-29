@@ -4,7 +4,7 @@
 #include "Game.h"
 using namespace engine;
 Enemy::Enemy()
-	:enemy_sprite(-100.0f, -100.0f, 2.0f)
+	:enemy_sprite(-100.0f, -100.0f, 2.0f,0.0f)
 {
 	rect.w = 60.0f;
 	rect.h = 60.0f;

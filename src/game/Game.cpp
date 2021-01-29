@@ -2,24 +2,58 @@
 #include "Resources.h"
 #include "input/Keyboard.h"
 #include "audio/SoundDevice.h"
-#include <future>
 
 #include "glm/gtc/matrix_transform.hpp"
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
 
-static inline void load()
+
+
+static inline void loadShader()
 {
 	using namespace engine;
+	std::cout << "Loding Adv shader" << std::endl;
 	Resources::LoadShader("adv", "src/engine/renderer/shader/Adv.shader");
+	std::cout << "Loding bas shader" << std::endl;
 	Resources::LoadShader("bas", "src/engine/renderer/shader/Basic.shader");
+}
+static inline void loadTex()
+{
+	using namespace engine;
+	std::cout << "Loding Frog img" << std::endl;
 	Resources::LoadTexture("Frog", "tex/texture.png");
+	std::cout << "Loding Nave img" << std::endl;
 	Resources::LoadTexture("Nave", "tex/nave.png");
+	std::cout << "Loding Test img" << std::endl;
 	Resources::LoadTexture("Test", "tex/test.png");
+	std::cout << "Loding Ship img" << std::endl;
+	Resources::LoadTexture("Ship", "tex/ship.png");
 }
 static inline void loadSounds()
 {
 	using namespace engine;
+	std::cout << "Loding Shot sound" << std::endl;
 	Resources::LoadSound("shot_sound","sounds/shot_sound.ogg");
+	std::cout << "Loding Boom sound" << std::endl;
 	Resources::LoadSound("boom_sound", "sounds/boom_sound.ogg");
+	std::cout << "Loding music sound" << std::endl;
+	Resources::LoadSound("music", "sounds/musicOri.ogg");
+}
+
+static std::thread LoadAudios;
+
+static inline ImGuiIO& InitImGui(GLFWwindow* window)
+{
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+	// Setup Platform/Renderer bindings
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplOpenGL3_Init((char*)glGetString(GL_NUM_SHADING_LANGUAGE_VERSIONS));
+	// Setup Dear ImGui style
+	ImGui::StyleColorsDark();
+	return io;
 }
 
 static inline bool callback_colisionFunc(Entity* f, Entity* c)
@@ -41,11 +75,17 @@ static inline bool callback_colisionFunc(Entity* f, Entity* c)
 	}
 	return false;
 }
+Game::Game()
+{
+}
 void Game::IInit()
 {
 	if (isInit)
 		return;
 
+	SoundDevice* mySound = SoundDevice::get();
+	LoadAudios = std::thread(loadSounds);
+	
 	state = GameState::RUNNING;
 	isInit = true;
 
@@ -70,8 +110,6 @@ void Game::IInit()
 		return;
 	}
 
-	
-
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1);
 
@@ -82,15 +120,14 @@ void Game::IInit()
 		isInit = false;
 		return;
 	}
+	loadShader();
+	loadTex();
+
 	std::cout << glGetString(GL_VERSION) << std::endl;
 
 	GLCall(glEnable(GL_BLEND));
 	GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-
-	//Set resources
-	// TODO: Make this multi thread using std::async or something
-	load();
-
+	
 	input::Keyboard::Init();
 
 	m_Proj = glm::ortho(0.0f, screen.w, 0.0f, screen.h, -1.0f, 1.0f);
@@ -108,10 +145,12 @@ void Game::IInit()
 
 	//Colision function
 	colisor.SetFuncTest(callback_colisionFunc);
+	
+	if (LoadAudios.joinable());
+		LoadAudios.join();
+
 	render::Renderer::Init();
-	//Init SoundDevice Singleton
-	SoundDevice* mySound = SoundDevice::get();
-	loadSounds();
+	music_speaker = std::make_unique<SoundSource>(0.1f);
 }
 
 void Game::IClear()
@@ -125,6 +164,9 @@ void Game::IClear()
 	glfwTerminate();
 	input::Keyboard::Clear();
 	entityArray.clear();
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
 }
 
 bool Game::IIsInit()
@@ -172,6 +214,12 @@ void Game::IPushIntoColisor(Entity* entity)
 	colisor.PushEntity(entity);
 }
 
+void Game::IPlayEffect(SoundSource& speaker, ALuint buffer)
+{
+	speaker.SetGain(effects_global_gain);
+	speaker.Play(buffer);
+}
+
 void Game::ILoop()
 {
 	if (!isInit)
@@ -180,9 +228,15 @@ void Game::ILoop()
 		return;
 	}
 
+	ImGuiIO& io = InitImGui(window);
+
+	//Play the music
+	music_speaker->Loop(true);
+	music_speaker->SetGain(0.1f);
+	music_speaker->Play(engine::Resources::GetSound("music"));
+	
 	float deltaTime = 0.0f;
 	float lastFrame = 0.0f;
-
 	std::cout << "LOOP  STARTING" << std::endl;
 	std::cout << "\nArrows Control the Frog\nSpaceBar to Shot\nA to Shot a LOT" << std::endl;
 	while (state != GameState::END)
@@ -192,6 +246,7 @@ void Game::ILoop()
 		lastFrame = currentTime;
 
 		HandleInput(deltaTime);
+		
 		Update(deltaTime);
 		Draw();
 
@@ -230,10 +285,29 @@ inline void Game::Draw()
 {
 	GLCall(glClearColor(0.5f, 0.7f, 0.8f, 1.0f));
 	GLCall(glClear(GL_COLOR_BUFFER_BIT));
+	
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
+
 	for (Entity* en : entityArray)
 		en->Draw(render::Renderer::getInstance());
+	
+	ImGui::Begin("Game options");
+	static float volume = 0.1f;
+	ImGui::SliderFloat("Music Volume", &volume, 0.0f,1.0f);
+	ImGui::SliderFloat("Effects Volume", &effects_global_gain, 0.0f, 1.0f);
+	for (Entity* en : entityArray) 
+	{
+		en->ImGUiRender();
+	}
+	ImGui::End();
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
 	render::Renderer::getInstance().Draw();
 	colisor.TestColision();
+	music_speaker->SetGain(volume);
 }
 
 void Game::Init()
@@ -246,7 +320,6 @@ void Game::Clear()
 	Game::getInstance().IClear();
 }
 
-/* Kinda useless */
 bool Game::IsInit()
 {
 	return Game::getInstance().IIsInit();
@@ -285,4 +358,9 @@ void Game::SetProjection(glm::mat4 proj)
 void Game::PushIntoColisor(Entity* entity)
 {
 	Game::getInstance().IPushIntoColisor(entity);
+}
+
+void Game::PlayEffect(SoundSource& speaker, ALuint buffer)
+{
+	Game::getInstance().IPlayEffect(speaker, buffer);
 }

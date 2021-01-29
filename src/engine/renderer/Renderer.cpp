@@ -91,9 +91,10 @@ namespace render {
         Texs[0] = engine::Resources::GetTexture("Frog")->GetId();
         Texs[1] = engine::Resources::GetTexture("Test")->GetId();
         Texs[2] = engine::Resources::GetTexture("Nave")->GetId();
+        Texs[3] = engine::Resources::GetTexture("Ship")->GetId();
         auto loc = glGetUniformLocation(m_Shader->GetId(), "u_Textures");
-        int samplers[3] = { 0,1,2 };
-        glUniform1iv(loc, 3, samplers);
+        int samplers[4] = { 0,1,2,3 };
+        glUniform1iv(loc, 4, samplers);
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, Texs[0]);
@@ -104,6 +105,9 @@ namespace render {
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_2D, Texs[2]);
 
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_2D, Texs[3]);
+
     }
 
     void Renderer::IClear()
@@ -112,7 +116,7 @@ namespace render {
         delete m_Shader;
         GLCall(glDeleteBuffers(1, &VertexBufferId));
         GLCall(glDeleteBuffers(1, &IndexBufferId));
-        for(int i = 0 ; i < 3; i++)
+        for(int i = 0 ; i < 4; i++)
             glDeleteTextures(1, &Texs[i]);
         GLCall(glDeleteVertexArrays(1, &VertexArrayId));
     }

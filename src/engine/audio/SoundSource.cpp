@@ -1,8 +1,9 @@
 #include "SoundSource.h"
 #include <iostream>
 
-SoundSource::SoundSource()
+SoundSource::SoundSource(float gain)
 {
+	p_Gain = gain;
 	alGenSources(1, &p_Source);
 	alSourcef(p_Source, AL_PITCH, p_Pitch);
 	alSourcef(p_Source, AL_GAIN, p_Gain);
@@ -36,4 +37,32 @@ void SoundSource::Play(const ALuint buffer_to_play)
 		alGetSourcei(p_Source, AL_SOURCE_STATE, &state);
 	}
 	std::cout << "done playing sound\n";*/
+}
+
+void SoundSource::Loop(bool loop)
+{
+	p_LoopSound = loop;
+	alSourcei(p_Source, AL_LOOPING, p_LoopSound);
+}
+
+void SoundSource::SetGain(float gain)
+{
+	p_Gain = gain;
+	alSourcef(p_Source, AL_GAIN, p_Gain);
+	
+}
+
+bool SoundSource::IsPlaying()
+{
+	ALint state;
+	alGetSourcei(p_Source, AL_SOURCE_STATE, &state);
+	if(state == AL_PLAYING)
+		return true;
+	return false;
+}
+
+ALuint SoundSource::GetBuffer()
+{
+	if(p_Buffer)
+	return p_Buffer;
 }

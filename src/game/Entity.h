@@ -30,4 +30,5 @@ public:
 	virtual bool IsSpawned() { return spawned; };
 	virtual Rect GetPosition() { return rect; }
 	virtual void ColisionCallBack(Entity* cause) {  }
+	virtual void ImGUiRender(){  }
 };

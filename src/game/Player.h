@@ -13,7 +13,9 @@ private:
 	std::vector<Shot*> shots;
 	unsigned char spawnedShots;
 	unsigned char lastSpawnedShots;
-	SoundSource Speaker[4];
+	SoundSource Speaker[2];
+	SpriteCoords sprite_coords;
+	int texId;
 public:
 	Player();
 	~Player();
@@ -21,6 +23,7 @@ public:
 	void Update(float deltaTime) override;
 	void Draw(render::Renderer& render) override;
 	void ColisionCallBack(Entity* cause) override;
+	void ImGUiRender() override;
 	void Kill();
 private:
 	inline void Input(float deltaTime);
